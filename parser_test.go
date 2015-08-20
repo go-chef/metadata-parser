@@ -74,3 +74,47 @@ func TestParser_ParseStatement(t *testing.T) {
 		}
 	}
 }
+
+func TestParser_CommentMeta(t *testing.T) {
+	var test_metadata = `
+	#
+	# Author:: Jesse Nelson <spheromak@gmail.com>
+	#
+	# Licensed under the Apache License, Version 2.0 (the "License");
+	# you may not use this file except in compliance with the License.
+	# You may obtain a copy of the License at
+	#
+	# http://www.apache.org/licenses/LICENSE-2.0
+	#
+	# Unless required by applicable law or agreed to in writing, software
+	# distributed under the License is distributed on an "AS IS" BASIS,
+	# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	# See the License for the specific language governing permissions and
+	# limitations under the License.
+	#
+
+	name 'user'
+	version '1.0.24'
+
+	maintainer 'Jesse Nelson'
+	maintainer_email 'spheromak@gmail.com'
+	license 'Apache 2.0'
+	description 'Create system user'
+	long_description IO.read(File.join(File.dirname(__FILE__), 'README.md'))
+
+	depends 'poise', '~> 1.0'
+	depends 'sudo', '~> 2.5'
+	depends 'user', '~> 0.4'
+	depends 'ssh', '~> 0.10.4'
+	depends 'dnf'
+	`
+
+	meta, err := metadata.NewParser(strings.NewReader(test_metadata)).Parse()
+	if err != nil {
+		fmt.Println(" Error parsing: ", err)
+		t.Fail()
+	}
+
+	spew.Dump(meta)
+
+}

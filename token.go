@@ -21,7 +21,6 @@ var tokens = [...]string{
 	PGT: "~>",
 
 	IDENT:     "IDENT",
-	NUMBER:    "NUMBER",
 	STRING:    "STRING",
 	BADSTRING: "BADSTRING",
 	BADESCAPE: "BADESCAPE",
@@ -62,7 +61,6 @@ const (
 	literal_beg
 	// Literals
 	IDENT
-	NUMBER
 	STRING
 	BADSTRING
 	BADESCAPE

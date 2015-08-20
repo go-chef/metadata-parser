@@ -69,6 +69,8 @@ func (s *Scanner) Scan() (tok Token, pos Pos, lit string) {
 		return s.scanString()
 	case ',':
 		return COMMA, pos, ","
+	case '#':
+		return s.scanComment()
 	}
 
 	return ILLEGAL, pos, string(ch0)
@@ -129,6 +131,26 @@ func (s *Scanner) scanIdent() (tok Token, pos Pos, lit string) {
 	}
 
 	return IDENT, pos, lit
+}
+
+func (s *Scanner) scanComment() (tok Token, pos Pos, lit string) {
+	_, pos = s.r.read()
+	s.r.unread()
+
+	// create a buffer and read every character up to newline
+	var buf bytes.Buffer
+	for {
+		if ch, _ := s.r.read(); ch == eof {
+			break
+		} else if ch == '\n' {
+			break
+		} else {
+			_, _ = buf.WriteRune(ch)
+		}
+	}
+	lit = buf.String()
+
+	return COMMENT, pos, buf.String()
 }
 
 // scanDigits consume a contiguous series of digits.

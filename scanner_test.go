@@ -16,10 +16,11 @@ func TestScanner_Scan(t *testing.T) {
 	}{
 		// Special tokens (EOF, ILLEGAL, WS)
 		{s: ``, tok: metadata.EOF},
-		{s: `#`, tok: metadata.ILLEGAL, lit: `#`},
+		{s: `/`, tok: metadata.ILLEGAL, lit: `/`},
 		{s: ` `, tok: metadata.WS, lit: " "},
 		{s: "\t", tok: metadata.WS, lit: "\t"},
 		{s: "\n", tok: metadata.WS, lit: "\n"},
+		{s: `#`, tok: metadata.COMMENT},
 
 		// Identifiers
 		{s: `foo`, tok: metadata.IDENT, lit: `foo`},

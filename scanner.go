@@ -53,11 +53,9 @@ func (s *Scanner) Scan() (tok Token, pos Pos, lit string) {
 	// as an ident or reserved word.
 	if isWhitespace(ch0) {
 		return s.scanWhitespace()
-	} else if isLetter(ch0) || ch0 == '_' {
+	} else if isLetter(ch0) || isDigit(ch0) || ch0 == '_' {
 		s.r.unread()
 		return s.scanIdent()
-	} else if isDigit(ch0) {
-		return s.scanNumber()
 	}
 
 	// Otherwise parse individual characters.
@@ -131,64 +129,6 @@ func (s *Scanner) scanIdent() (tok Token, pos Pos, lit string) {
 	}
 
 	return IDENT, pos, lit
-}
-
-// scanNumber consumes anything that looks like the start of a number.
-// Numbers start with a digit, full stop, plus sign or minus sign.
-// This function can return non-number tokens if a scan is a false positive.
-// For example, a minus sign followed by a letter will just return a minus sign.
-func (s *Scanner) scanNumber() (tok Token, pos Pos, lit string) {
-	var buf bytes.Buffer
-
-	// Check if the initial rune is a "+" or "-".
-	ch, pos := s.r.curr()
-	if ch == '+' || ch == '-' {
-		// Peek at the next two runes.
-		ch1, _ := s.r.read()
-		ch2, _ := s.r.read()
-		s.r.unread()
-		s.r.unread()
-
-		// This rune must be followed by a digit or a full stop and a digit.
-		if isDigit(ch1) || (ch1 == '.' && isDigit(ch2)) {
-			_, _ = buf.WriteRune(ch)
-		} else if ch == '+' {
-			return ADD, pos, ""
-		} else if ch == '-' {
-			return SUB, pos, ""
-		}
-	} else if ch == '.' {
-		// Peek and see if the next rune is a digit.
-		ch1, _ := s.r.read()
-		s.r.unread()
-		if !isDigit(ch1) {
-			return ILLEGAL, pos, "."
-		}
-
-		// Unread the full stop so we can read it later.
-		s.r.unread()
-	} else {
-		s.r.unread()
-	}
-
-	// Read as many digits as possible.
-	_, _ = buf.WriteString(s.scanDigits())
-
-	// If next code points are a full stop and digit then consume them.
-	if ch0, _ := s.r.read(); ch0 == '.' {
-		if ch1, _ := s.r.read(); isDigit(ch1) {
-			_, _ = buf.WriteRune(ch0)
-			_, _ = buf.WriteRune(ch1)
-			_, _ = buf.WriteString(s.scanDigits())
-		} else {
-			s.r.unread()
-			s.r.unread()
-		}
-	} else {
-		s.r.unread()
-	}
-
-	return NUMBER, pos, buf.String()
 }
 
 // scanDigits consume a contiguous series of digits.

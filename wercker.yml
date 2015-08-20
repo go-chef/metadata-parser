@@ -20,6 +20,7 @@ build:
         code: |
           go get -u github.com/hashicorp/go-version
           go get -u github.com/davecgh/go-spew/spew
+          go get -u github.com/axw/gocov/gocov
           go get -u github.com/matm/gocov-html
           go get -u github.com/mattn/goveralls
 

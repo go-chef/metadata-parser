@@ -77,7 +77,7 @@ func (p *Parser) Parse() (md *Metadata, err error) {
 		case VERSION:
 			v, err := p.parseVersion()
 			if err != nil {
-				return md, err
+				return nil, err
 			}
 			md.Version = v
 		}
@@ -93,6 +93,10 @@ func (p *Parser) parseVersion() (version.Version, error) {
 	v, err := version.NewVersion(lit)
 	if err != nil {
 		return *v, fmt.Errorf("error parsing version at %d, %s : %s", pos, lit, err)
+	}
+
+	if len(v.Segments()) < 3 {
+		return *v, fmt.Errorf("error parsing version,not enough segments at %d, %s : %s", pos, lit, err)
 	}
 
 	return *v, nil

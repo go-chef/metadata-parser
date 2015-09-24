@@ -18,10 +18,13 @@ func TestParser_ParseStatement(t *testing.T) {
 	long_description File.Read('README.md')
 	version "1.0.1"
 
-	depends "yum", "> 3.0.0"
 
-	depends "mysql", "3.0.0"
-	depends "redis"
+	depends 'yum', '> 3.0.0'
+	depends 'mysql', "3.0.0"
+	depends 'redis'
+	depends 'thing'
+	depends 'thisthing'
+	depends 'packagecloud'
 `
 
 	c, _ := version.NewConstraint("> 3.0.0")
@@ -73,6 +76,10 @@ func TestParser_ParseStatement(t *testing.T) {
 			t.Fail()
 		}
 	}
+
+	if len(meta.Depends) != 6 {
+		t.Fatal("Expected len of deps to == 6, got ", len(meta.Depends))
+	}
 }
 
 func TestParser_CommentMeta(t *testing.T) {
@@ -103,10 +110,11 @@ func TestParser_CommentMeta(t *testing.T) {
 	long_description IO.read(File.join(File.dirname(__FILE__), 'README.md'))
 
 	depends 'poise', '~> 1.0'
-	depends 'sudo', '~> 2.5'
+	depends 'sudo', '~> 2.5' #stuff
 	depends 'user', '~> 0.4'
+	# ohai
 	depends 'ssh', '~> 0.10.4'
-	depends 'dnf'
+	depends 'dnf' #things
 	`
 
 	meta, err := metadata.NewParser(strings.NewReader(test_metadata)).Parse()
@@ -115,6 +123,7 @@ func TestParser_CommentMeta(t *testing.T) {
 		t.Fail()
 	}
 
-	spew.Dump(meta)
-
+	if len(meta.Depends) != 5 {
+		t.Fatal("Expected len of deps to == 5, got ", len(meta.Depends))
+	}
 }

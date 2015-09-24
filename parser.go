@@ -74,12 +74,14 @@ func (p *Parser) Parse() (md *Metadata, err error) {
 				return md, err
 			}
 			md.Depends = append(md.Depends, d)
+			p.unscan()
 		case VERSION:
 			v, err := p.parseVersion()
 			if err != nil {
 				return nil, err
 			}
 			md.Version = v
+			p.unscan()
 		}
 	}
 }
